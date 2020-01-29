@@ -1,0 +1,67 @@
+create database webapp;
+use webapp;
+create table app_startup(user_time varchar(50) UNIQUE NOT NULL,status char(1) default 'Y');
+
+insert into app_startup (user_time) values("First Time");
+
+select user_time from app_startup;
+
+create table user_mst(uid integer AUTO_INCREMENT,userid varchar(50) UNIQUE NOT NULL,contact varchar(20),email varchar(50) unique not null,password varchar(50) not null,status char(1) default 'Y', primary key(uid));
+
+insert into user_mst(userid,email,password) values("admin","admin@gmail.com","admin");
+
+update user_mst set userid="admin", email="admin@gmail.com", password="admin" where uid=1;
+
+update app_startup set status="Y" where user_time="First Time";
+
+create table role_mst(roleid integer AUTO_INCREMENT,rolename varchar(50) UNIQUE NOT NULL,description varchar(100) not null,status char(1) default 'Y', primary key(roleid));
+
+insert into role_mst(rolename,description) values("admin","Admin has all the rights");
+
+create table right_mst(rightid integer AUTO_INCREMENT,rightname varchar(50) UNIQUE NOT NULL,description varchar(100) not null,link varchar(50) unique not null, primary key(rightid));
+
+insert into right_mst(rightname,description,link) values("update","Update of records","update.jsp");
+
+insert into right_mst(rightname,description,link) values("search","Search the records","search.jsp");
+
+insert into right_mst(rightname,description,link) values("sort","sort of records","sort.jsp");
+
+insert into right_mst(rightname,description,link) values("addseller","add of seller","addseller.jsp");
+
+insert into right_mst(rightname,description,link) values("addproducts","add of products","addproduct.jsp");
+
+insert into right_mst(rightname,description,link) values("deleteproducts","Delete of Products","deleteproduct.jsp");
+
+insert into right_mst(rightname,description,link) values("deleteseller","Delete of seller","deleteseller.jsp");
+
+insert into right_mst(rightname,description,link) values("addtask","Adding new Task","task");
+
+insert into right_mst(rightname,description,link) values("showtask","Show Task","showtask");
+
+insert into right_mst(rightname,description,link) values("showrole","Show roles","showrole");
+
+CREATE TABLE USER_ROLE_MAPPING (MAPID integer AUTO_INCREMENT, USERID INTEGER REFERENCES user_mst(uid) ON DELETE CASCADE,ROLEID INTEGER REFERENCES role_mst(roleid) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID) );
+
+INSERT INTO USER_ROLE_MAPPING (USERID,ROLEID) VALUES(1,1);
+
+CREATE TABLE ROLE_RIGHT_MAPPING (MAPID integer AUTO_INCREMENT, ROLEID INTEGER REFERENCES ROLE_MST(ROLEID) ON DELETE CASCADE,RIGHTID INTEGER REFERENCES RIGHT_MST(RIGHTID) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(1,1);
+
+SELECT USER_MST.USERID AS USERID, ROLE_MST.ROLENAME AS ROLE,RIGHT_MST.RIGHTNAME FROM USER_MST, ROLE_MST,RIGHT_MST ,USER_ROLE_MAPPING,ROLE_RIGHT_MAPPING WHERE USER_MST.UID=USER_ROLE_MAPPING.USERID AND ROLE_MST.ROLEID=USER_ROLE_MAPPING.ROLEID AND ROLE_MST.ROLEID=ROLE_RIGHT_MAPPING.ROLEID AND RIGHT_MST.RIGHTID=ROLE_RIGHT_MAPPING.RIGHTID and USER_MST.USERID='ram' and password='1234';
+
+create table task_mst(tid integer AUTO_INCREMENT,taskname varchar(50) UNIQUE NOT NULL,description varchar(20),startdate varchar(50) unique not null,starttime varchar(50) not null,source varchar(50) not null,destination varchar(50) not null,status char(1) default 'Y', primary key(tid));
+
+CREATE TABLE USER_TASK_MAPPING (MAPID integer AUTO_INCREMENT, USERID INTEGER REFERENCES USER_MST(UID) ON DELETE CASCADE,TASKID INTEGER REFERENCES TASK_MST(TID) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+select task_mst.taskname,task_mst.description,task_mst.startdate,task_mst.starttime,task_mst.source,task_mst.destination from task_mst,user_mst,user_task_mapping where task_mst.tid=user_task_mapping.taskid and user_mst.uid=1;
+
+create table city(cid integer auto_increment,cval varchar(20),cname varchar(20),status char(1) default 'Y',primary key(cid));
+
+insert into city(cval,cname) values("DEL","DELHI");
+
+insert into city(cval,cname) values("MUM","MUMBAI");
+
+insert into city(cval,cname) values("RAJ","RAJASTHAN");
+
+insert into city(cval,cname) values("KAN","KANPUR");
